@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 st.set_page_config(
     page_title="Air Quality Dashboard",
@@ -9,11 +10,9 @@ st.set_page_config(
 
 st.title("🌬☁ Air Quality Analysis Dashboard")
 
-@st.cache_data
-def load_data():
-    return pd.read_csv("main_data.csv")
-
-df_clean_iter = load_data()
+BASE_DIR = os.path.dirname(__file__)
+data_path = os.path.join(BASE_DIR, "main_data.csv")
+df_clean_iter = pd.read_csv(data_path)
 
 st.sidebar.markdown(
     f"""
@@ -118,3 +117,4 @@ st.markdown(
   **kecepatan angin (WSPM)** dibandingkan jam sebelumnya.
 """
 )
+
