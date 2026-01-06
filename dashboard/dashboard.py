@@ -28,6 +28,46 @@ station_pilihan = st.sidebar.selectbox(
     sorted(df_clean_iter["station"].unique())
 )
 
+with st.expander("Tingkat polusi udara di berbagai stasiun (2013–2017)"):
+    rata_pm25_station = (
+        df_clean_iter.groupby("station")["PM2.5"]
+        .mean()
+        .sort_values(ascending=False)
+    )
+
+    stations = rata_pm25_station.index.tolist()
+    values = rata_pm25_station.values.tolist()
+
+    st.subheader("Mean PM2.5")
+    col_1, col_2, col_3, col_4 = st.columns(4)
+    cols = [col_1, col_2, col_3, col_4]
+
+    for col, station, value in zip(cols, stations, values):
+        with col:
+            st.metric(
+                label=f"### {station}",
+                value=f"{value:.2f}"
+            )
+
+    max_value = rata_pm25_station.max()
+    warna = [
+        "red" if value == max_value else "gray"
+        for value in rata_pm25_station.values
+    ]
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.bar(
+        rata_pm25_station.index,
+        rata_pm25_station.values,
+        color=warna
+    )
+
+    ax.set_title("Rata-rata PM2.5 per Stasiun (2013–2017)")
+    ax.set_xlabel("Stasiun")
+    ax.set_ylabel("Rata-rata PM2.5")
+    plt.tight_layout()
+    st.pyplot(fig)
+
 pm25_line = (
     df_clean_iter
     .groupby(["station", "year", "month"])["PM2.5"]
@@ -96,7 +136,7 @@ with col_chart2:
     st.pyplot(fig)
 
 st.subheader(
-    f"⏰ Jam Terburuk: {jam_terburuk}:00 "
+    f"🕒 Jam Terburuk: {jam_terburuk}:00 "
     f"(Bulan {bulan_terburuk}, Tahun {tahun_terburuk})"
 )
 
@@ -117,4 +157,3 @@ st.markdown(
   **kecepatan angin (WSPM)** dibandingkan jam sebelumnya.
 """
 )
-
